@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.3.0] - 2025-09-13
+
+### Changed
+- Default behavior now respects .gitignore for triggering syncs
+- Removed default excludePatterns (*.log, *.tmp) - gitignore handles this now
+- Sync triggers automatically exclude files in .gitignore
+- If no .gitignore exists, syncs all files as before
+
+### Added
+- GitignoreParser utility for proper gitignore pattern matching
+- Automatic refresh of gitignore patterns when .gitignore is modified
+
 ## [0.2.0] - 2025-09-13
 
 ### Improved

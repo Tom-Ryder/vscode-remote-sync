@@ -38,7 +38,7 @@ export class FileSyncManager {
       return;
     }
 
-    if (document.fileName.endsWith('.gitignore')) {
+    if (document.fileName && document.fileName.endsWith('.gitignore')) {
       const parser = await GitignoreParser.load(workspaceFolder.uri.fsPath);
       this.gitignoreParsers.set(workspaceFolder.uri.fsPath, parser);
     }

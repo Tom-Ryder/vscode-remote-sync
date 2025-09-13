@@ -2,7 +2,7 @@
   "name": "remote-sync",
   "displayName": "Remote Sync",
   "description": "Seamless file synchronization to remote development environments via SSH",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "tryder",
     "icon": "icon.png",
     "repository": {
@@ -76,8 +76,8 @@
         },
         "remote-sync.triggers.excludePatterns": {
           "type": "array",
-          "default": ["*.log", "*.tmp"],
-          "description": "File patterns to ignore for triggering sync",
+          "default": [],
+          "description": "Additional file patterns to ignore for triggering sync (gitignore is automatically used)",
           "scope": "resource"
         },
         "remote-sync.sync.deleteExtraneous": {
