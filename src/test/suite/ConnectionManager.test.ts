@@ -80,7 +80,7 @@ suite('ConnectionManager', () => {
     const workspaceFolder = '/workspace/path';
     manager.setConnection(workspaceFolder, connectionConfig);
 
-    let resolveExecute: () => void;
+    let resolveExecute: (() => void) | undefined;
     mockExecute.returns(
       new Promise((resolve) => {
         resolveExecute = (): void =>
@@ -100,7 +100,9 @@ suite('ConnectionManager', () => {
       /Sync already in progress/,
     );
 
-    resolveExecute!();
+    if (resolveExecute) {
+      resolveExecute();
+    }
     await sync1;
   });
 

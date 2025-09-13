@@ -42,7 +42,7 @@ suite('RsyncExecutor', () => {
       '/local/path',
       connectionConfig,
       syncConfig,
-      mockSpawn as unknown as SpawnFunction,
+      mockSpawn as SpawnFunction,
       mockFs,
     );
   });
@@ -167,7 +167,7 @@ suite('RsyncExecutor', () => {
       '/local/path',
       connectionConfig,
       nonDeleteConfig,
-      mockSpawn as unknown as SpawnFunction,
+      mockSpawn as SpawnFunction,
       mockFs,
     );
     (mockFs.access as sinon.SinonStub).rejects();

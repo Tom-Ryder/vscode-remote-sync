@@ -1,23 +1,9 @@
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
+import SSHConfig from 'ssh-config';
 import type { SshHost } from '../types';
-
-const SSHConfig = require('ssh-config') as {
-  parse: (str: string) => SSHConfigType;
-  DIRECTIVE: 1;
-};
-
-interface SSHConfigType {
-  compute: (host: string) => Record<string, string | undefined>;
-  [Symbol.iterator]: () => Iterator<SSHConfigLine>;
-}
-
-interface SSHConfigLine {
-  type: number;
-  param?: string;
-  value?: string;
-}
+import { isNodeError } from '../utils';
 
 export class SshConfigParser {
   private static readonly EXCLUDED_PATTERNS = [
@@ -39,18 +25,18 @@ export class SshConfigParser {
 
       return this.extractHosts(config);
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      if (isNodeError(error) && error.code === 'ENOENT') {
         return [];
       }
       throw error;
     }
   }
 
-  private extractHosts(config: SSHConfigType): SshHost[] {
+  private extractHosts(config: SSHConfig): SshHost[] {
     const hosts: SshHost[] = [];
 
     for (const section of config) {
-      if (section.type !== 1 || section.param !== 'Host') {
+      if (section.type !== SSHConfig.DIRECTIVE || section.param !== 'Host') {
         continue;
       }
 
@@ -73,31 +59,30 @@ export class SshConfigParser {
       return true;
     }
 
-    return SshConfigParser.EXCLUDED_PATTERNS.some((pattern) => {
-      if (pattern instanceof RegExp) {
-        return pattern.test(hostValue);
-      }
-      return false;
-    });
+    return SshConfigParser.EXCLUDED_PATTERNS.some((pattern) => pattern.test(hostValue));
   }
 
-  private extractHostConfig(config: SSHConfigType, hostName: string): SshHost | null {
-    const computed = (
-      config as { compute: (host: string) => Record<string, string | undefined> }
-    ).compute(hostName);
+  private extractHostConfig(config: SSHConfig, hostName: string): SshHost | null {
+    const computed = config.compute(hostName);
 
-    const hostname = (computed.HostName as string) || hostName;
-    const user = computed.User;
+    const hostnameRaw = computed.HostName;
+    const hostname = (Array.isArray(hostnameRaw) ? hostnameRaw[0] : hostnameRaw) || hostName;
+
+    const userRaw = computed.User;
+    const user = Array.isArray(userRaw) ? userRaw[0] : userRaw;
 
     if (this.isExcludedByUser(user) || this.isExcludedByHostname(hostname)) {
       return null;
     }
 
+    const portRaw = computed.Port;
+    const portStr = Array.isArray(portRaw) ? portRaw[0] : portRaw;
+
     return {
       name: hostName,
       hostname,
       user,
-      port: computed.Port ? parseInt(computed.Port, 10) : undefined,
+      port: portStr ? parseInt(portStr, 10) : undefined,
     };
   }
 

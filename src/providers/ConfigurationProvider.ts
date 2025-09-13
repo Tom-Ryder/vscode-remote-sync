@@ -8,6 +8,7 @@ import type {
   UIConfig,
   WorkspaceConfig,
 } from '../types';
+import { delay, parseJsonSafe, SYNC_CONSTANTS } from '../utils';
 
 export class ConfigurationProvider {
   private static readonly CONFIG_SECTION = 'remote-sync';
@@ -24,7 +25,7 @@ export class ConfigurationProvider {
       triggers: this.getTriggerConfig(config),
       ui: this.getUIConfig(config),
       advanced: {
-        debounceMs: config.get<number>('advanced.debounceMs', 500),
+        debounceMs: config.get<number>('advanced.debounceMs', SYNC_CONSTANTS.DEFAULT_DEBOUNCE_MS),
       },
     };
   }
@@ -72,7 +73,7 @@ export class ConfigurationProvider {
 
     await Promise.all(updates);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await delay(SYNC_CONSTANTS.CONFIG_PERSIST_DELAY_MS);
 
     try {
       await this.persistWorkspaceSettings(workspaceFolder, connection);
@@ -95,9 +96,9 @@ export class ConfigurationProvider {
     let current: Record<string, unknown> = {};
     try {
       const content = await fs.readFile(settingsPath, 'utf8');
-      const parsedUnknown: unknown = JSON.parse(content);
-      if (parsedUnknown && typeof parsedUnknown === 'object' && !Array.isArray(parsedUnknown)) {
-        current = parsedUnknown as Record<string, unknown>;
+      const parsed = parseJsonSafe<Record<string, unknown>>(content);
+      if (parsed) {
+        current = parsed;
       }
     } catch {
       current = {};

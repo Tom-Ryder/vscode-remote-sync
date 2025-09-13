@@ -1,4 +1,5 @@
 import type { ConnectionConfig, SyncConfig, SyncResult, SyncTrigger } from '../types';
+import { ConnectionError, delay, ERROR_CODES, SYNC_CONSTANTS } from '../utils';
 import { RsyncExecutor } from './RsyncExecutor';
 
 interface ConnectionState {
@@ -39,11 +40,11 @@ export class ConnectionManager {
   ): Promise<SyncResult> {
     const state = this.connections.get(workspaceFolder);
     if (!state || !state.config.enabled) {
-      throw new Error('No active connection for workspace');
+      throw new ConnectionError('No active connection for workspace', ERROR_CODES.NO_CONNECTION);
     }
 
     if (this.activeOperations.has(workspaceFolder)) {
-      throw new Error('Sync already in progress');
+      throw new ConnectionError('Sync already in progress', ERROR_CODES.SYNC_IN_PROGRESS);
     }
 
     this.activeOperations.add(workspaceFolder);
@@ -77,7 +78,6 @@ export class ConnectionManager {
     dryRun: boolean,
   ): Promise<SyncResult> {
     let lastResult: SyncResult | undefined;
-    const delays = [1000, 2000, 4000];
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       lastResult = await executor.execute(dryRun);
@@ -87,19 +87,20 @@ export class ConnectionManager {
       }
 
       if (attempt < maxRetries) {
-        await this.delay(delays[attempt] || 4000);
+        const delayMs =
+          SYNC_CONSTANTS.RETRY_DELAYS_MS[attempt] || SYNC_CONSTANTS.RETRY_DELAYS_MS[2];
+        await delay(delayMs);
       }
     }
 
-    return lastResult!;
+    if (!lastResult) {
+      throw new Error('No sync attempts were made');
+    }
+    return lastResult;
   }
 
   private updateConnectionState(workspaceFolder: string, state: ConnectionState): void {
     this.connections.set(workspaceFolder, state);
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   getFailureCount(workspaceFolder: string): number {

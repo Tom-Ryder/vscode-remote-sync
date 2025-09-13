@@ -6,6 +6,7 @@ import type { NotificationManager } from '../ui/NotificationManager';
 import type { SetupWizard } from '../ui/SetupWizard';
 import type { StatusBarManager } from '../ui/StatusBarManager';
 import { StatusBarState } from '../ui/StatusBarManager';
+import { ensureError } from '../utils';
 
 export class CommandRegistry {
   constructor(
@@ -165,7 +166,7 @@ export class CommandRegistry {
           duration: 0,
           filesTransferred: 0,
           bytesTransferred: 0,
-          error: error instanceof Error ? error : new Error(errorMessage),
+          error: ensureError(error),
         },
         workspaceFolder.name,
         config.ui,

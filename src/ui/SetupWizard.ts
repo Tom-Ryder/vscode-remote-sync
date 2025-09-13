@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { SshConfigParser } from '../core/SshConfigParser';
 import type { ConnectionConfig, SshHost } from '../types';
+import { validateRemotePath } from '../utils';
 
 export class SetupWizard {
   private readonly sshParser = new SshConfigParser();
@@ -80,15 +81,7 @@ export class SetupWizard {
       prompt: 'Enter the absolute path to the remote directory',
       placeHolder: '/home/user/project',
       ignoreFocusOut: true,
-      validateInput: (value) => {
-        if (!value || value.trim().length === 0) {
-          return 'Path cannot be empty';
-        }
-        if (!value.startsWith('/')) {
-          return 'Path must be absolute (start with /)';
-        }
-        return undefined;
-      },
+      validateInput: validateRemotePath,
     });
 
     return input?.trim();

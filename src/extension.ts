@@ -7,6 +7,7 @@ import { SyncTrigger } from './types';
 import { NotificationManager } from './ui/NotificationManager';
 import { SetupWizard } from './ui/SetupWizard';
 import { StatusBarManager, StatusBarState } from './ui/StatusBarManager';
+import { ensureError, SYNC_CONSTANTS } from './utils';
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Remote Sync');
@@ -95,7 +96,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
       const failureCount = connectionManager.getFailureCount(workspaceFolder.uri.fsPath);
 
-      if (failureCount >= 3) {
+      if (failureCount >= SYNC_CONSTANTS.MAX_FAILURE_COUNT) {
         notificationManager.showConnectionLost(config.connection.host);
       } else {
         const choice = await notificationManager.showSyncError(
@@ -104,7 +105,7 @@ export function activate(context: vscode.ExtensionContext): void {
             duration: 0,
             filesTransferred: 0,
             bytesTransferred: 0,
-            error: error instanceof Error ? error : new Error(String(error)),
+            error: ensureError(error),
           },
           workspaceFolder.name,
           config.ui,
