@@ -2,7 +2,7 @@
   "name": "remote-sync",
   "displayName": "Remote Sync",
   "description": "Seamless file synchronization to remote development environments via SSH",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "tryder",
     "icon": "icon.png",
     "repository": {
