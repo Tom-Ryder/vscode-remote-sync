@@ -2,7 +2,7 @@
   "name": "remote-sync",
   "displayName": "Remote Sync",
   "description": "File sync to remote environments via SSH. Respects .gitignore, zero config.",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "publisher": "tryder",
     "icon": "icon.png",
     "repository": {

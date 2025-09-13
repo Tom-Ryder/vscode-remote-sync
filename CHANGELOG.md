@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.3.1] - 2025-09-13
+
+### Documentation
+- Clarified default .gitignore behavior in README
+- Updated package description to highlight zero-config feature
+
 ## [0.3.0] - 2025-09-13
 
 ### Changed
