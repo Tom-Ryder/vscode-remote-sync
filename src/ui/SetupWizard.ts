@@ -92,7 +92,6 @@ export class SetupWizard {
       `Currently connected to ${currentHost}. Reconfigure connection?`,
       { modal: true },
       'Yes',
-      'Cancel',
     );
 
     return result === 'Yes';
