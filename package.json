@@ -1,0 +1,161 @@
+{
+  "name": "remote-sync",
+  "displayName": "Remote Sync",
+  "description": "Seamless file synchronization to remote development environments via SSH",
+    "version": "0.1.0",
+    "publisher": "tryder",
+    "icon": "icon.png",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/tryder/vscode-remote-sync.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "sync",
+    "rsync",
+    "ssh",
+    "remote",
+    "development"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "remote-sync.configure",
+        "title": "Remote Sync: Configure Connection"
+      },
+      {
+        "command": "remote-sync.syncNow",
+        "title": "Remote Sync: Sync Now"
+      },
+      {
+        "command": "remote-sync.disable",
+        "title": "Remote Sync: Disable for Workspace"
+      },
+      {
+        "command": "remote-sync.showLog",
+        "title": "Remote Sync: Show Sync Log"
+      },
+      {
+        "command": "remote-sync.dryRun",
+        "title": "Remote Sync: Dry Run"
+      }
+    ],
+    "configuration": {
+      "title": "Remote Sync",
+      "properties": {
+        "remote-sync.connection.host": {
+          "type": "string",
+          "description": "SSH host from ~/.ssh/config",
+          "scope": "resource"
+        },
+        "remote-sync.connection.remotePath": {
+          "type": "string",
+          "description": "Remote directory path",
+          "scope": "resource"
+        },
+        "remote-sync.connection.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable remote sync for this workspace",
+          "scope": "resource"
+        },
+        "remote-sync.triggers.patterns": {
+          "type": "array",
+          "default": ["*"],
+          "description": "File patterns that trigger sync on save",
+          "scope": "resource"
+        },
+        "remote-sync.triggers.excludePatterns": {
+          "type": "array",
+          "default": ["*.log", "*.tmp"],
+          "description": "File patterns to ignore for triggering sync",
+          "scope": "resource"
+        },
+        "remote-sync.sync.deleteExtraneous": {
+          "type": "boolean",
+          "default": true,
+          "description": "Delete files on remote that don't exist locally",
+          "scope": "resource"
+        },
+        "remote-sync.sync.useGitignore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Respect .gitignore patterns",
+          "scope": "resource"
+        },
+        "remote-sync.sync.additionalExcludes": {
+          "type": "array",
+          "default": ["node_modules", "__pycache__", ".DS_Store"],
+          "description": "Additional patterns to exclude from sync",
+          "scope": "resource"
+        },
+        "remote-sync.sync.retryCount": {
+          "type": "number",
+          "default": 3,
+          "description": "Number of retry attempts on sync failure",
+          "scope": "resource"
+        },
+        "remote-sync.ui.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show sync notifications",
+          "scope": "resource"
+        },
+        "remote-sync.ui.notificationLevel": {
+          "type": "string",
+          "enum": ["all", "errors-only"],
+          "default": "errors-only",
+          "description": "Notification verbosity level",
+          "scope": "resource"
+        },
+        "remote-sync.advanced.debounceMs": {
+          "type": "number",
+          "default": 500,
+          "description": "Milliseconds to wait before syncing after save",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./dist/test/runTest.js",
+    "lint": "eslint src --ext ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "@types/sinon": "^17.0.2",
+    "@types/ssh2": "^1.11.18",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "prettier": "^3.1.1",
+    "sinon": "^17.0.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3",
+    "ssh-config": "^4.4.3"
+  }
+}
