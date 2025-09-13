@@ -7,7 +7,7 @@
     "icon": "icon.png",
     "repository": {
       "type": "git",
-      "url": "https://github.com/tryder/vscode-remote-sync.git"
+      "url": "https://github.com/Tom-Ryder/vscode-remote-sync.git"
   },
   "engines": {
     "vscode": "^1.85.0"
