@@ -11,6 +11,7 @@
 ### Added
 - GitignoreParser utility for proper gitignore pattern matching
 - Automatic refresh of gitignore patterns when .gitignore is modified
+- Clear documentation of default .gitignore behavior
 
 ## [0.2.0] - 2025-09-13
 

@@ -1,7 +1,7 @@
 {
   "name": "remote-sync",
   "displayName": "Remote Sync",
-  "description": "Seamless file synchronization to remote development environments via SSH",
+  "description": "File sync to remote environments via SSH. Respects .gitignore, zero config.",
     "version": "0.3.0",
     "publisher": "tryder",
     "icon": "icon.png",

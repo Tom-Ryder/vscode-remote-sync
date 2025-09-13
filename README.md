@@ -5,6 +5,7 @@ VS Code extension for file synchronization to remote development environments vi
 ## Features
 
 - Automatic sync on save
+- Respects .gitignore by default
 - SSH config integration
 - Pattern matching for file triggers
 - Debounced sync operations
@@ -34,12 +35,14 @@ VS Code extension for file synchronization to remote development environments vi
   "remote-sync.connection.remotePath": "/home/user/project",
   "remote-sync.connection.enabled": true,
   "remote-sync.triggers.patterns": ["*.py", "*.yaml"],
-  "remote-sync.triggers.excludePatterns": ["*.log", "*.tmp"],
+  "remote-sync.triggers.excludePatterns": [],
   "remote-sync.sync.deleteExtraneous": true,
   "remote-sync.sync.useGitignore": true,
   "remote-sync.sync.additionalExcludes": ["node_modules", "__pycache__"]
 }
 ```
+
+**Default behavior**: Files in .gitignore are automatically excluded from sync. If no .gitignore exists, all files are synced.
 
 ### Commands
 
