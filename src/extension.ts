@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext): void {
       );
 
       const syncManager = new FileSyncManager(config.advanced.debounceMs);
-      syncManager.registerWorkspace(workspaceFolder, config.triggers, () => {
+      void syncManager.registerWorkspace(workspaceFolder, config.triggers, () => {
         void performSync(workspaceFolder, SyncTrigger.Save);
       });
 
@@ -151,7 +151,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
       const syncManager = fileSyncManagers.get(workspaceFolder.uri.fsPath);
       if (syncManager) {
-        syncManager.handleSave(document, config.triggers);
+        void syncManager.handleSave(document, config.triggers);
       }
     }),
   );

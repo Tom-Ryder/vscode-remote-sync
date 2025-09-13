@@ -141,7 +141,7 @@ export class ConfigurationProvider {
   private getTriggerConfig(config: vscode.WorkspaceConfiguration): TriggerConfig {
     return {
       patterns: config.get<string[]>('triggers.patterns', ['*']),
-      excludePatterns: config.get<string[]>('triggers.excludePatterns', ['*.log', '*.tmp']),
+      excludePatterns: config.get<string[]>('triggers.excludePatterns', []),
     };
   }
 

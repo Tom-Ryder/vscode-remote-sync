@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { FileSyncManager } from '../../core/FileSyncManager';
 import type { TriggerConfig } from '../../types';
+import { GitignoreParser } from '../../utils';
 
 suite('FileSyncManager', () => {
   let sandbox: sinon.SinonSandbox;
@@ -24,6 +25,7 @@ suite('FileSyncManager', () => {
     sandbox = sinon.createSandbox();
     clock = sandbox.useFakeTimers();
     manager = new FileSyncManager(500);
+    sandbox.stub(GitignoreParser, 'load').resolves(null);
   });
 
   teardown(() => {
@@ -33,7 +35,7 @@ suite('FileSyncManager', () => {
 
   test('should register and trigger sync callback', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     const mockDocument = {
       uri: vscode.Uri.file('/workspace/project/main.py'),
@@ -52,7 +54,7 @@ suite('FileSyncManager', () => {
 
   test('should debounce multiple saves', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     const mockDocument = {
       uri: vscode.Uri.file('/workspace/project/main.py'),
@@ -71,9 +73,9 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 1);
   });
 
-  test('should respect trigger patterns', () => {
+  test('should respect trigger patterns', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     const getWorkspaceFolderStub = sandbox.stub(vscode.workspace, 'getWorkspaceFolder');
     getWorkspaceFolderStub.returns(mockWorkspaceFolder);
@@ -103,9 +105,9 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 2);
   });
 
-  test('should respect exclude patterns', () => {
+  test('should respect exclude patterns', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     sandbox.stub(vscode.workspace, 'getWorkspaceFolder').returns(mockWorkspaceFolder);
 
@@ -124,14 +126,14 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 0);
   });
 
-  test('should handle wildcard pattern', () => {
+  test('should handle wildcard pattern', async () => {
     const wildcardConfig: TriggerConfig = {
       patterns: ['*'],
       excludePatterns: ['*.log'],
     };
 
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, wildcardConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, wildcardConfig, syncCallback);
 
     sandbox.stub(vscode.workspace, 'getWorkspaceFolder').returns(mockWorkspaceFolder);
 
@@ -145,9 +147,9 @@ suite('FileSyncManager', () => {
     assert.ok(syncCallback.calledOnce);
   });
 
-  test('should ignore saves outside workspace', () => {
+  test('should ignore saves outside workspace', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     sandbox.stub(vscode.workspace, 'getWorkspaceFolder').returns(undefined);
 
@@ -161,9 +163,9 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 0);
   });
 
-  test('should unregister workspace', () => {
+  test('should unregister workspace', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     manager.unregisterWorkspace(mockWorkspaceFolder);
 
@@ -179,14 +181,14 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 0);
   });
 
-  test('should handle nested paths correctly', () => {
+  test('should handle nested paths correctly', async () => {
     const nestedConfig: TriggerConfig = {
       patterns: ['src/**/*.ts', 'test/**/*.test.ts'],
       excludePatterns: [],
     };
 
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, nestedConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, nestedConfig, syncCallback);
 
     sandbox.stub(vscode.workspace, 'getWorkspaceFolder').returns(mockWorkspaceFolder);
 
@@ -215,9 +217,9 @@ suite('FileSyncManager', () => {
     assert.strictEqual(syncCallback.callCount, 2);
   });
 
-  test('should clear all timeouts on dispose', () => {
+  test('should clear all timeouts on dispose', async () => {
     const syncCallback = sandbox.stub();
-    manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
+    await manager.registerWorkspace(mockWorkspaceFolder, triggerConfig, syncCallback);
 
     sandbox.stub(vscode.workspace, 'getWorkspaceFolder').returns(mockWorkspaceFolder);
 
