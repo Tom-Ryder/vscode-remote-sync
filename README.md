@@ -36,7 +36,7 @@ VS Code extension for file synchronization to remote development environments vi
   "remote-sync.connection.enabled": true,
   "remote-sync.triggers.patterns": ["*.py", "*.yaml"],
   "remote-sync.triggers.excludePatterns": [],
-  "remote-sync.sync.deleteExtraneous": true,
+  "remote-sync.sync.deleteExtraneous": false,
   "remote-sync.sync.useGitignore": true,
   "remote-sync.sync.additionalExcludes": ["node_modules", "__pycache__"]
 }

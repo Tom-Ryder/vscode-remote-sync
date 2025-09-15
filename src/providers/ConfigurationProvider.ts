@@ -127,7 +127,7 @@ export class ConfigurationProvider {
 
   private getSyncConfig(config: vscode.WorkspaceConfiguration): SyncConfig {
     return {
-      deleteExtraneous: config.get<boolean>('sync.deleteExtraneous', true),
+      deleteExtraneous: config.get<boolean>('sync.deleteExtraneous', false),
       useGitignore: config.get<boolean>('sync.useGitignore', true),
       additionalExcludes: config.get<string[]>('sync.additionalExcludes', [
         'node_modules',
